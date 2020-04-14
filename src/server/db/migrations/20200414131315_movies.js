@@ -1,4 +1,4 @@
-exports.up = (knex, promise) => {
+exports.up = (knex, Promise) => {
   return knex.schema.createTable('movies', (table) => {
     table.increments();
     table.string('name').notNullable().unique();
@@ -8,6 +8,6 @@ exports.up = (knex, promise) => {
   });
 };
 
-exports.down = (knex, promise) => {
+exports.down = (knex, Promise) => {
   return knex.schema.dropTable('movies');
 };
