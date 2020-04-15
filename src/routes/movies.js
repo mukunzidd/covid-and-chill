@@ -11,8 +11,28 @@ router.get(BASE_URL, async (ctx) => {
       status: 'success',
       data: movies,
     };
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.get(`${BASE_URL}/:id`, async (ctx) => {
+  try {
+    const movie = await queries.getSingleMovie(ctx.params.id);
+    if (movie.length) {
+      ctx.body = {
+        status: 'success',
+        data: movie,
+      };
+    } else {
+      ctx.status = 404;
+      ctx.body = {
+        status: 'error',
+        message: 'Movie does not exist',
+      };
+    }
+  } catch (error) {
+    console.log(error);
   }
 });
 
