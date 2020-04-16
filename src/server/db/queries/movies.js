@@ -14,4 +14,10 @@ function addMovie(movie) {
   return knex('movies').insert(movie).returning('*');
 }
 
-module.exports = { getAllMovies, getSingleMovie, addMovie };
+function updateMovie(id, movie) {
+  return knex('movies')
+    .update(movie)
+    .where({ id: parseInt(id, 10) })
+    .returning('*');
+}
+module.exports = { getAllMovies, getSingleMovie, addMovie, updateMovie };

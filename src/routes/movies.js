@@ -36,7 +36,7 @@ router.get(`${BASE_URL}/:id`, async (ctx) => {
   }
 });
 
-router.post(`${BASE_URL}`, async (ctx) => {
+router.post(BASE_URL, async (ctx) => {
   try {
     const movie = await queries.addMovie(ctx.request.body);
     if (movie.length) {
@@ -50,6 +50,31 @@ router.post(`${BASE_URL}`, async (ctx) => {
       ctx.body = {
         status: 'error',
         message: 'Something went wrong',
+      };
+    }
+  } catch (error) {
+    ctx.status = 400;
+    ctx.body = {
+      status: 'error',
+      message: error.message || 'something went wrong',
+    };
+  }
+});
+
+router.put(`${BASE_URL}/:id`, async (ctx) => {
+  try {
+    const movie = await queries.updateMovie(ctx.params.id, ctx.request.body);
+    if (movie.length) {
+      ctx.status = 200;
+      ctx.body = {
+        status: 'success',
+        data: movie,
+      };
+    } else {
+      ctx.status = 404;
+      ctx.body = {
+        status: 'error',
+        message: 'Movie does not exist',
       };
     }
   } catch (error) {

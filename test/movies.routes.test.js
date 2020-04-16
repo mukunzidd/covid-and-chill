@@ -105,7 +105,7 @@ describe('routes : movies', () => {
           name: '6 Underground',
         })
         .end((err, res) => {
-          // there should be an error
+          // there should be an error ???
           // should.exist(err);
           // there should be a 400 status code
           res.status.should.equal(400);
@@ -116,6 +116,53 @@ describe('routes : movies', () => {
           res.body.status.should.eql('error');
           // the JSON response body should have a message key
           should.exist(res.body.message);
+          done();
+        });
+    });
+  });
+  describe('PUT /api/v1/movies/:id', () => {
+    it('should return the movie that was updated', (done) => {
+      knex('movies')
+        .select('*')
+        .then((movie) => {
+          const movieObject = movie[0];
+          chai
+            .request(server)
+            .put(`/api/v1/movies/${movieObject.id}`)
+            .send({
+              name: 'The Tales of the Gods',
+            })
+            .end((err, res) => {
+              should.not.exist(err);
+              res.status.should.eql(200);
+              res.type.should.eql('application/json');
+              res.body.status.should.eql('success');
+              res.body.data[0].should.include.keys(
+                'id',
+                'name',
+                'genre',
+                'rating',
+                'explicit'
+              );
+              const newMovieObject = res.body.data[0];
+              newMovieObject.name.should.not.eql(movieObject.name);
+              done();
+            });
+        });
+    });
+    it('should throw an error if the movie does not exist', (done) => {
+      chai
+        .request(server)
+        .put('/api/v1/movies/1234567890')
+        .send({
+          name: 'The Tales of the Gods',
+        })
+        .end((err, res) => {
+          // should.not.exist(err);
+          res.status.should.eql(404);
+          res.type.should.eql('application/json');
+          res.body.status.should.eql('error');
+          res.body.message.should.eql('Movie does not exist');
           done();
         });
     });
