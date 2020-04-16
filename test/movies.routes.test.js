@@ -73,4 +73,51 @@ describe('routes : movies', () => {
         });
     });
   });
+  describe('POST /api/v1/movies', () => {
+    it('Should return the movie that was added', (done) => {
+      chai
+        .request(server)
+        .post('/api/v1/movies')
+        .send({
+          name: 'Arrow',
+          genre: 'Action',
+          rating: 12,
+          explicit: true,
+        })
+        .end((err, res) => {
+          res.status.should.eql(201);
+          res.type.should.eql('application/json');
+          res.body.status.should.eql('success');
+          res.body.data[0].should.include.keys(
+            'id',
+            'name',
+            'genre',
+            'explicit'
+          );
+        });
+      done();
+    });
+    it('should throw an error if the payload is malformed', (done) => {
+      chai
+        .request(server)
+        .post('/api/v1/movies')
+        .send({
+          name: '6 Underground',
+        })
+        .end((err, res) => {
+          // there should be an error
+          // should.exist(err);
+          // there should be a 400 status code
+          res.status.should.equal(400);
+          // the response should be JSON
+          res.type.should.equal('application/json');
+          // the JSON response body should have a
+          // key-value pair of {"status": "error"}
+          res.body.status.should.eql('error');
+          // the JSON response body should have a message key
+          should.exist(res.body.message);
+          done();
+        });
+    });
+  });
 });

@@ -10,4 +10,8 @@ function getSingleMovie(id) {
     .where({ id: parseInt(id, 10) });
 }
 
-module.exports = { getAllMovies, getSingleMovie };
+function addMovie(movie) {
+  return knex('movies').insert(movie).returning('*');
+}
+
+module.exports = { getAllMovies, getSingleMovie, addMovie };
