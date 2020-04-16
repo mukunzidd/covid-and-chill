@@ -20,4 +20,17 @@ function updateMovie(id, movie) {
     .where({ id: parseInt(id, 10) })
     .returning('*');
 }
-module.exports = { getAllMovies, getSingleMovie, addMovie, updateMovie };
+
+function deleteMovie(id) {
+  return knex('movies')
+    .del()
+    .where({ id: parseInt(id, 10) })
+    .returning('*');
+}
+module.exports = {
+  getAllMovies,
+  getSingleMovie,
+  addMovie,
+  updateMovie,
+  deleteMovie,
+};

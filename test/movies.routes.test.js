@@ -124,8 +124,8 @@ describe('routes : movies', () => {
     it('should return the movie that was updated', (done) => {
       knex('movies')
         .select('*')
-        .then((movie) => {
-          const movieObject = movie[0];
+        .then((movies) => {
+          const movieObject = movies[0];
           chai
             .request(server)
             .put(`/api/v1/movies/${movieObject.id}`)
@@ -159,6 +159,50 @@ describe('routes : movies', () => {
         })
         .end((err, res) => {
           // should.not.exist(err);
+          res.status.should.eql(404);
+          res.type.should.eql('application/json');
+          res.body.status.should.eql('error');
+          res.body.message.should.eql('Movie does not exist');
+          done();
+        });
+    });
+  });
+  describe('DELETE /api/v1/movies/:id', () => {
+    it('should return the deleted movie', (done) => {
+      knex('movies')
+        .select('*')
+        .then((movies) => {
+          const movieObject = movies[0];
+          const lengthBeforeDelete = movies.length;
+          chai
+            .request(server)
+            .delete(`/api/v1/movies/${movieObject.id}`)
+            .end((err, res) => {
+              res.status.should.eql(200);
+              res.type.should.eql('application/json');
+              res.body.status.should.eql('success');
+
+              res.body.data[0].should.include.keys(
+                'id',
+                'name',
+                'genre',
+                'rating',
+                'explicit'
+              );
+              knex('movies')
+                .select('*')
+                .then((movies) => {
+                  lengthBeforeDelete.should.eql(movies.length + 1);
+                });
+              done();
+            });
+        });
+    });
+    it('should throw an error if the movie does not exist', (done) => {
+      chai
+        .request(server)
+        .delete('/api/v1/movies/1234567890')
+        .end((err, res) => {
           res.status.should.eql(404);
           res.type.should.eql('application/json');
           res.body.status.should.eql('error');
